@@ -1,25 +1,33 @@
 /** @jsxImportSource @emotion/react */
 import { css } from "@emotion/react";
 import React from "react";
+import { useDispatch, useSelector } from "react-redux";
+import { useNavigate } from "react-router-dom";
+import { AppState, gettingUnansweredQuestionsAction, gotUnansweredQuestionsAction } from "./dataStore/Store";
 import Page from "./Page";
 import PageTitle from "./PageTitle";
-import { getUnansweredQuestions, QuestionData } from "./QuestionData";
+import { getUnansweredQuestions } from "./QuestionData";
 import QuestionList from "./QuestionList";
 import { PrimaryButton } from "./Styles";
 
 const HomePage = () => {
-  const [questions, setQuestions] = React.useState<QuestionData[]>();
+  const navigate = useNavigate();
+  const dispatch = useDispatch();
+  const questions = useSelector((state: AppState) => state.questions.unanswered);
+  const loading = useSelector((state: AppState) => state.questions.loading);
 
   React.useEffect(() => {
     const fetchData = async () => {
+      dispatch(gettingUnansweredQuestionsAction());
       const unansweredQuestions = await getUnansweredQuestions();
-      setQuestions(unansweredQuestions);
+      dispatch(gotUnansweredQuestionsAction(unansweredQuestions));
     };
     fetchData();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   const onClickAskQuestion = () => {
-    console.log("TODO - move to the AskPage");
+    navigate("ask");
   };
 
   return (
@@ -34,7 +42,7 @@ const HomePage = () => {
           Ask a question
         </PrimaryButton>
       </div>
-      {questions ? <QuestionList data={questions} /> : "Loading . . . "}
+      {loading ? "Loading . . . " : <QuestionList data={questions} />}
     </Page>
   );
 };

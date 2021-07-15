@@ -1,14 +1,23 @@
 /** @jsxImportSource @emotion/react */
 import { css } from "@emotion/react";
+import React from "react";
+import { useForm } from "react-hook-form";
+import { Link, useNavigate, useSearchParams } from "react-router-dom";
 import { fontFamily, fontSize, gray1, gray2, gray5 } from "./Styles";
 import UserIcon from "./UserIcon";
 
-const Header = () => {
+type FormData = {
+  search: string;
+}
 
-  const onChangeSearchInput = (
-    e: React.ChangeEvent<HTMLInputElement>
-  ) => {
-    console.log(e.currentTarget.value);
+const Header = () => {
+  const { register, handleSubmit } = useForm<FormData>();
+  const [searchParams] = useSearchParams();
+  const criteria = searchParams.get("criteria") || "";
+  const navigate = useNavigate();
+
+  const submitForm = ({ search }: FormData) => {
+    navigate(`search?criteria=${search}`);
   };
 
   return (
@@ -25,36 +34,40 @@ const Header = () => {
       border-bottom: 1px solid ${gray5};
       box-shadow: 0 3px 7px 0 rgba(110, 112, 114, 0.21);
     `}>
-      <a href="./" css={css`
+      <Link to="/" css={css`
         font-size: 24px;
         font-weight: bold;
         color: ${gray1};
         text-decoration: none;
       `}>
         Q & A
-      </a>
-      <input css={css`
-          box-sizing: border-box;
-          font-family: ${fontFamily};
-          font-size: ${fontSize};
-          padding: 8px 10px;
-          border: 1px solid ${gray5};
-          border-radius: 3px;
-          color: ${gray2};
-          background-color: white;
-          width: 200px;
-          height: 30px;
-          :focus {
-            outline-color: ${gray5};
-          }
-        `}
-        type="text"
-        placeholder="Search..."
-        onChange={onChangeSearchInput}
-      />
+      </Link>
+      <form onSubmit={handleSubmit(submitForm)}>
+        <input
+          {...register("search")}
+          type="text"
+          placeholder="Search..."
+          defaultValue={criteria}
+          css={css`
+            box-sizing: border-box;
+            font-family: ${fontFamily};
+            font-size: ${fontSize};
+            padding: 8px 10px;
+            border: 1px solid ${gray5};
+            border-radius: 3px;
+            color: ${gray2};
+            background-color: white;
+            width: 200px;
+            height: 30px;
+            :focus {
+              outline-color: ${gray5};
+            }
+          `}
+        />
+      </form>
       <span>
         <UserIcon />
-        <a href="./signin" css={css `
+        <Link to="signin" css={css`
           font-family: ${fontFamily};
           font-size: ${fontSize};
           padding: 5px 10px;
@@ -70,7 +83,7 @@ const Header = () => {
           }
         `}>
           <span>Sign In</span>
-        </a>
+        </Link>
       </span>
     </div>
   );

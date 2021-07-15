@@ -1,5 +1,6 @@
 /** @jsxImportSource @emotion/react */
 import { css } from "@emotion/react";
+import { Link } from "react-router-dom";
 
 import { QuestionData } from "./QuestionData";
 import { gray2, gray3 } from "./Styles";
@@ -14,12 +15,15 @@ const Question = ({ data, showContent = true }: Props) => {
     <div css={css`
       padding: 10px 0px;
     `}>
-      <div css={css`
+
+      <Link to={`/questions/${data.questionId}`} css={css`
+        text-decoration: none;
+        color: ${gray2};
         padding: 10px 0px;
         font-size: 19px;
       `}>
         {data.title}
-      </div>
+      </Link>
 
       {showContent &&
         <div css={css `
